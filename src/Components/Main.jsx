@@ -45,21 +45,18 @@ const Main = () => {
     setShowModel(true);
   };
 
-  const handleCloseModel = () => {
-    setShowModel(false);
-  };
+  const handleCloseModel = () => setShowModel(false);
 
   const handleSaveTask = () => {
     if (title.trim() !== "" && deadline) {
       const newTask = { title, priority, deadline, comments, completed: false };
+      let updatedTasks = [...tasks];
 
-      let updatedTasks;
       if (isEditing) {
-        updatedTasks = [...tasks];
         updatedTasks[editIndex] = newTask;
         toast.success("Task updated successfully! ✅");
       } else {
-        updatedTasks = [...tasks, newTask];
+        updatedTasks.push(newTask);
         toast.success("Task added successfully! 🎉");
       }
 
@@ -71,8 +68,7 @@ const Main = () => {
   };
 
   const handleDeleteTask = (index) => {
-    const updatedTasks = tasks.filter((_, i) => i !== index);
-    setTasks(updatedTasks);
+    setTasks(tasks.filter((_, i) => i !== index));
     toast.info("Task deleted 🗑️");
   };
 
@@ -85,24 +81,22 @@ const Main = () => {
 
   const filteredTasks = tasks.filter((task) => {
     const taskDate = new Date(task.deadline);
-
     if (activeTab === "Today") return isToday(taskDate) && !task.completed;
     if (activeTab === "Pending") return (isAfter(taskDate, startOfToday()) || isToday(taskDate)) && !task.completed;
     if (activeTab === "Overdue") return isBefore(taskDate, startOfToday()) && !task.completed;
-
     return !task.completed;
   });
 
   const completedTasks = tasks.filter(task => task.completed);
 
   return (
-    <div className="p-4 flex flex-col items-center w-full">
+    <div className="p-4 flex flex-col items-center w-full max-w-full">
       {/* Tabs */}
-      <div className="flex justify-center items-center p-4 w-[500px] max-w-3xl">
+      <div className="flex gap-0.5 flex-wrap justify-center items-center p-4 w-full max-w-3xl">
         {["Today", "Pending", "Overdue"].map((tab, index) => (
           <div
             key={tab}
-            className={`p-2 flex-1 text-center cursor-pointer transition-all ml-0.5 text-sm sm:text-base md:text-md w-[100px] ${
+            className={`p-2 flex-1 text-center cursor-pointer transition-all text-sm sm:text-base md:text-md w-1/3 sm:w-[120px] ${
               activeTab === tab ? "bg-green-800 text-white" : "bg-slate-300"
             } ${index === 0 ? "rounded-l-lg" : ""} ${index === 2 ? "rounded-r-lg" : ""}`}
             onClick={() => setActiveTab(tab)}
@@ -114,7 +108,7 @@ const Main = () => {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center w-full max-w-3xl space-y-3 sm:space-y-0">
-        <div className="text-2xl sm:text-3xl text-gray-900 font-semibold">Tasks List</div>
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Tasks List</h2>
         <button 
           className="bg-green-700 w-full sm:w-40 px-4 py-2 rounded-md hover:bg-green-800 text-white transition"
           onClick={handleOpenModel}
@@ -125,10 +119,11 @@ const Main = () => {
 
       {/* Active Tasks */}
       <div className="mt-4 bg-gray-100 p-4 rounded-md shadow-md w-full max-w-3xl">
-        <h2 className="text-lg font-semibold mb-2">{activeTab} Tasks</h2>
+        <h2 className="text-xl font-semibold  mb-2">{activeTab} Tasks</h2>
         {filteredTasks.length > 0 ? (
           filteredTasks.map((task, index) => (
-            <div key={index} className="bg-white p-3 rounded-md shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+            <div key={index} className="bg-white p-3 rounded-md shadow-sm flex flex-row justify-between items-center">
+              {/* Task Details */}
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -137,11 +132,12 @@ const Main = () => {
                   className="h-5 w-5 cursor-pointer accent-green-700"
                 />
                 <div>
-                  <span className="block text-lg font-semibold">{task.title}</span>
+                  <span className="block sm:text-base md:text-lg lg:text-lg font-semibold">{task.title}</span>
                   <span className="text-sm text-gray-500">{task.priority} Priority | Due: {format(task.deadline, "MMMM d, yyyy")}</span>
                 </div>
               </div>
-              <div className="flex gap-2">
+              {/* Icons - Always in Right Corner */}
+              <div className="flex gap-1 ml-auto sm:ml-0">
                 <button onClick={() => handleEditTask(tasks.indexOf(task))}><EditIcon /></button>
                 <button onClick={() => handleDeleteTask(tasks.indexOf(task))}><DeleteOutlineIcon/></button>
               </div>
@@ -157,7 +153,7 @@ const Main = () => {
         <h2 className="text-lg font-semibold mb-2">Completed Tasks</h2>
         {completedTasks.length > 0 ? (
           completedTasks.map((task, index) => (
-            <div key={index} className="bg-white p-3 rounded-md shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0 opacity-60">
+            <div key={index} className="bg-white p-3 rounded-md shadow-sm flex flex-row justify-between items-center opacity-60">
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -165,7 +161,7 @@ const Main = () => {
                   onChange={() => handleToggleComplete(tasks.indexOf(task))}
                   className="h-5 w-5 cursor-pointer accent-green-700"
                 />
-                <span className="block text-lg font-semibold line-through text-gray-500">{task.title}</span>
+                <span className="block font-semibold sm:text-base md:text-lg lg:text-lg line-through text-gray-500">{task.title}</span>
               </div>
             </div>
           ))

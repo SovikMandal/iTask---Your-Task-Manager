@@ -17,7 +17,7 @@ const Model = ({
       onClick={handleCloseModel} 
     >
       <div 
-        className="bg-white rounded-lg p-6 shadow-lg w-[500px] relative mt-20"
+        className="bg-white rounded-lg p-6 shadow-lg w-full max-w-lg relative mt-10 sm:mt-20"
         onClick={(e) => e.stopPropagation()} 
       >
         {/* Close Button */}
@@ -48,8 +48,8 @@ const Model = ({
           </div>
 
           {/* Priority & Deadline */}
-          <div className="flex gap-4">
-            <div className="w-1/2">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="w-full sm:w-1/2">
               <label className="block text-sm font-medium text-gray-600 pb-2">Priority</label>
               <select
                 value={priority} 
@@ -63,7 +63,7 @@ const Model = ({
               </select>
             </div>
 
-            <div className="w-1/2">
+            <div className="w-full sm:w-1/2">
               <label className="block text-sm font-medium text-gray-600 pb-2">Deadline</label>
               <Datepicker deadline={deadline} setDeadline={setDeadline} />
             </div>
